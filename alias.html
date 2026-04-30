@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>ALIAS: Wedding Edition (Hebrew)</title>
+    
+    <!-- Load elegant Hebrew font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ================================================= */
+        /* --- PDF Print Rules (Standard Poker Size) --- */
+        @page { size: 2.5in 3.5in; margin: 0; }
+        
+        body { 
+            margin: 0; padding: 0; 
+            font-family: 'Frank Ruhl Libre', serif;
+            background-color: #f7f3e8; 
+        }
+        
+        /* ================================================= */
+        /* --- Minimalist Wedding Card Design --- */
+        .card {
+            width: 2.5in; height: 3.5in; 
+            background-color: #ffffff; 
+            box-sizing: border-box; 
+            
+            border: 8px solid #778b71; 
+            border-radius: 20px; 
+            
+            page-break-after: always; break-after: page;
+            display: flex; flex-direction: column; overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05); 
+        }
+        
+        /* THE HEADER SECTION */
+        .card-header-area {
+            text-align: center;
+            padding: 25px 0 10px 0; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 16pt;
+            font-weight: 700;
+            color: #778b71; 
+            margin: 0;
+            letter-spacing: 1px;
+        }
+
+        /* THE WORD LIST SECTION */
+        .word-list {
+            margin: 0 auto; padding: 0; list-style: none; counter-reset: word-counter;
+            width: 85%; flex-grow: 1; 
+            display: flex; flex-direction: column; 
+            justify-content: space-evenly; 
+            padding-bottom: 20px;
+        }
+        
+        .word-list li {
+            counter-increment: word-counter; 
+            font-size: 14pt; 
+            font-weight: 700; 
+            color: #333;
+            display: flex; align-items: center; 
+            padding: 8px 0;
+            border-bottom: 1px solid #eee; 
+        }
+        
+        .word-list li:last-child { border-bottom: none; }
+        
+        /* GOLD-COLORED NUMBERS (RTL Adjusted) */
+        .word-list li::before {
+            content: counter(word-counter); 
+            color: #bfa071; 
+            font-weight: 700;
+            font-size: 15pt;
+            width: 25px; 
+            margin-left: 10px; 
+            text-align: left;
+            display: inline-block;
+        }
+
+        /* ================================================= */
+        /* --- Screen Handling --- */
+        @media print { 
+            body { background-color: white; } 
+            #instructions { display: none !important; } 
+            .card { box-shadow: none; }
+        }
+
+        #instructions { 
+            padding: 30px; text-align: center; background: #fff; 
+            margin-bottom: 20px; border-bottom: 2px solid #ddd; 
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="instructions">
+        <h2 style="color:#778b71; margin-top: 0;">ALIAS: מהדורת חתונה</h2>
+        <p>1. ערוך את רשימת המילים בתוך קוד ה-HTML (חפש "PASTE YOUR WORDS HERE").</p>
+        <p>2. לחץ <strong>Ctrl+P</strong> (או Cmd+P) ושמור כ-PDF.</p>
+        <p><em>ודא שהגדרת שוליים (Margins) מוגדרת כ"ללא" (None) וגרפיקת רקע מסומנת.</em></p>
+    </div>
+
+    <div id="deck"></div>
+
+    <!-- ========================================== -->
+    <!-- PASTE YOUR WORDS HERE (ONE WORD PER LINE)  -->
+    <!-- ========================================== -->
+    <script type="text/plain" id="raw-words">
+חופה
+טבעת נישואין
+שבירת הכוס
+הינומה
+ריקוד סלואו
+ירח דבש
+שמלת כלה
+חליפת חתן
+כתובה
+זר פרחים
+צילומי זוגיות
+קבלת פנים
+הזמנה לחתונה
+מסיבת רווקות
+שושבינה
+מתנות לאורחים
+זרקורים
+חתן וכלה
+ריקודים
+ברכות
+צילום מגנטים
+דיג'יי
+אולם אירועים
+שבע ברכות
+כניסה לחופה
+מזל טוב
+עוגת חתונה
+    </script>
+    <!-- ========================================== -->
+
+    <script>
+        const wordsPerCard = 6; 
+        const deckContainer = document.getElementById('deck');
+        
+        const rawText = document.getElementById('raw-words').textContent;
+
+        const myWords = rawText.split(/\r?\n/)
+                               .map(word => word.trim())
+                               .filter(word => word.length > 0);
+
+        for (let i = 0; i < myWords.length; i += wordsPerCard) {
+            const cardWords = myWords.slice(i, i + wordsPerCard);
+            
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'card';
+            
+            const headerArea = document.createElement('div');
+            headerArea.className = 'card-header-area';
+            
+            const titleDiv = document.createElement('div');
+            titleDiv.className = 'card-title';
+            titleDiv.textContent = 'מהדורת חתונה'; 
+            headerArea.appendChild(titleDiv);
+            
+            cardDiv.appendChild(headerArea);
+
+            const ol = document.createElement('ol');
+            ol.className = 'word-list';
+            
+            cardWords.forEach(word => {
+                const li = document.createElement('li');
+                li.textContent = word;
+                ol.appendChild(li);
+            });
+            
+            cardDiv.appendChild(ol);
+            deckContainer.appendChild(cardDiv);
+        }
+    </script>
+</body>
+</html>
