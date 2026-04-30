@@ -4,12 +4,10 @@
     <meta charset="UTF-8">
     <title>ALIAS: Wedding Edition</title>
     
-    <!-- Load elegant Hebrew font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&display=swap" rel="stylesheet">
 
-    <!-- Libraries for generating PNGs and ZIP files -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
@@ -31,29 +29,33 @@
             page-break-after: always; break-after: page;
             display: flex; flex-direction: column; overflow: hidden;
             box-shadow: 0 4px 8px rgba(0,0,0,0.05); 
-            margin: 10px auto; /* Centered for screen viewing */
+            margin: 10px auto; 
         }
         
         .card-header-area {
-            text-align: center; padding: 25px 0 10px 0; 
-            display: flex; flex-direction: column; align-items: center;
+            text-align: center; 
+            padding: 15px 0 5px 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
         }
 
-        .card-title {
-            font-size: 16pt; font-weight: 700; color: #778b71; 
-            margin: 0; letter-spacing: 1px;
+        .ring-icon {
+            width: 50px;
+            height: auto;
+            filter: grayscale(100%); /* Forces the icon to be black and white */
         }
 
         .word-list {
             margin: 0 auto; padding: 0; list-style: none; counter-reset: word-counter;
             width: 85%; flex-grow: 1; display: flex; flex-direction: column; 
-            justify-content: space-evenly; padding-bottom: 20px;
+            justify-content: space-evenly; padding-bottom: 25px; 
         }
         
         .word-list li {
             counter-increment: word-counter; font-size: 14pt; font-weight: 700; 
             color: #333; display: flex; align-items: center; 
-            padding: 8px 0; border-bottom: 1px solid #eee; 
+            padding: 6px 0; border-bottom: 1px solid #eee; 
         }
         
         .word-list li:last-child { border-bottom: none; }
@@ -64,7 +66,6 @@
             text-align: left; display: inline-block;
         }
 
-        /* --- UI and Export Panel --- */
         @media print { 
             body { background-color: white; } 
             #control-panel { display: none !important; } 
@@ -74,7 +75,7 @@
         #control-panel { 
             padding: 20px; text-align: center; background: #fff; 
             margin-bottom: 20px; border-bottom: 2px solid #ddd; 
-            font-family: sans-serif; direction: ltr; /* Keeping UI LTR for English/Code */
+            font-family: sans-serif; direction: ltr;
         }
 
         .export-btn {
@@ -98,9 +99,6 @@
 
     <div id="deck"></div>
 
-    <!-- ========================================== -->
-    <!-- PASTE YOUR WORDS HERE (ONE WORD PER LINE)  -->
-    <!-- ========================================== -->
     <script type="text/plain" id="raw-words">
 חופה
 טבעת נישואין
@@ -130,7 +128,6 @@
 מזל טוב
 עוגת חתונה
     </script>
-    <!-- ========================================== -->
 
     <script>
         const wordsPerCard = 6; 
@@ -147,10 +144,10 @@
             const headerArea = document.createElement('div');
             headerArea.className = 'card-header-area';
             
-            const titleDiv = document.createElement('div');
-            titleDiv.className = 'card-title';
-            titleDiv.textContent = 'מהדורת חתונה'; 
-            headerArea.appendChild(titleDiv);
+            // Replaced rings with the requested Flaticon image
+            headerArea.innerHTML = `
+                <img class="ring-icon" src="https://cdn-icons-png.flaticon.com/512/2457/2457612.png" crossorigin="anonymous" alt="Bride and Groom">
+            `;
             cardDiv.appendChild(headerArea);
 
             const ol = document.createElement('ol');
@@ -165,14 +162,12 @@
             deckContainer.appendChild(cardDiv);
         }
 
-        // --- ZIP Export Logic ---
         async function exportToZip() {
             document.getElementById('loading-msg').style.display = 'block';
             const zip = new JSZip();
             const cards = document.querySelectorAll('.card');
             
             for (let i = 0; i < cards.length; i++) {
-                // scale: 4 gives print-quality resolution (roughly 300+ DPI)
                 const canvas = await html2canvas(cards[i], { scale: 4, useCORS: true });
                 const imgData = canvas.toDataURL("image/png").split(',')[1];
                 zip.file(`Alias_Card_${i + 1}.png`, imgData, { base64: true });
