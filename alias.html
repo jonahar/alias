@@ -51,7 +51,7 @@
         .upload-btn {
             background-color: #778b71; color: white; border: none;
             padding: 8px 16px; font-size: 14px; border-radius: 5px;
-            cursor: pointer; margin: 5px; font-weight: bold; display: inline-block;
+            cursor: pointer; margin: 0; font-weight: bold; display: inline-block;
         }
         
         .upload-btn:hover { background-color: #5c6c57; }
@@ -60,7 +60,25 @@
 
         #deck-container { display: flex; flex-wrap: wrap; justify-content: center; padding: 20px; }
         #board-container { display: none; justify-content: center; padding: 20px; }
-        #board-tools { display: none; margin-top: 10px; } 
+        
+        /* Board specific tools wrapper */
+        #board-tools { 
+            display: none; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 15px; 
+            margin-top: 15px; 
+            flex-wrap: wrap;
+        } 
+
+        .slider-container {
+            display: flex; align-items: center; gap: 10px; 
+            background: #f7f3e8; padding: 6px 15px; 
+            border-radius: 5px; border: 1px solid #ddd;
+        }
+
+        .slider-container label { font-size: 14px; font-weight: bold; color: #555; }
+        .slider-container input { cursor: pointer; }
 
         /* --- Cards Design --- */
         .card {
@@ -139,13 +157,19 @@
             <button class="export-btn" id="btn-export-img" onclick="exportImages()">Export Cards as ZIP (PNGs)</button>
         </div>
 
-        <!-- Custom Image Uploaders (Visible only on Board tab) -->
+        <!-- Custom Image Uploaders & Slider (Visible only on Board tab) -->
         <div id="board-tools">
             <label for="start-image-upload" class="upload-btn">📷 Upload Start Photo</label>
             <input type="file" id="start-image-upload" accept="image/*" style="display: none;">
             
-            <label for="finish-image-upload" class="upload-btn">📷 Upload Finish Photo</label>
-            <input type="file" id="finish-image-upload" accept="image/*" style="display: none;">
+            <label for="bg-image-upload" class="upload-btn">🖼️ Upload Background</label>
+            <input type="file" id="bg-image-upload" accept="image/*" style="display: none;">
+
+            <div class="slider-container">
+                <label for="opacity-slider">Background Fade:</label>
+                <!-- Range slider from 0 (invisible) to 1 (solid) -->
+                <input type="range" id="opacity-slider" min="0" max="1" step="0.01" value="0.10">
+            </div>
         </div>
 
         <div id="loading-msg">Processing... Please wait.</div>
@@ -159,9 +183,10 @@
         <div class="board-wrapper" id="board-capture-area">
             <svg id="board-svg" viewBox="0 0 1200 850" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
                 
-                <!-- Watermark Background -->
-                <image href="https://cdn-icons-png.flaticon.com/512/2457/2457612.png" 
-                       x="400" y="225" width="400" height="400" opacity="0.06" filter="grayscale(100%)" />
+                <!-- Full-Bleed Background Image (Controlled by Slider) -->
+                <!-- preserveAspectRatio="xMidYMid slice" ensures it scales edge-to-edge perfectly -->
+                <image id="bg-image" href="https://cdn-icons-png.flaticon.com/512/2457/2457612.png" 
+                       x="0" y="0" width="1200" height="850" opacity="0.10" filter="grayscale(100%)" preserveAspectRatio="xMidYMid slice"/>
 
                 <!-- The invisible path logic -->
                 <path id="logic-path" fill="none" stroke="#bfa071" stroke-width="8" stroke-dasharray="15, 12" stroke-linecap="round" opacity="0.6"/>
@@ -173,33 +198,344 @@
     </div>
 
     <script type="text/plain" id="raw-words">
+אהבת אמת
+פלייליסט
+מקווה
+מעטפה
 חופה
-טבעת נישואין
-שבירת הכוס
-הינומה
-ריקוד סלואו
-ירח דבש
-שמלת כלה
-חליפת חתן
-כתובה
-זר פרחים
-צילומי זוגיות
-קבלת פנים
-הזמנה לחתונה
-מסיבת רווקות
-שושבינה
-מתנות לאורחים
-זרקורים
-חתן וכלה
-ריקודים
-ברכות
-צילום מגנטים
-דיג'יי
-אולם אירועים
-שבע ברכות
-כניסה לחופה
-מזל טוב
+BST (קבלן)
+לב
+להתכרבל
+חומץ תפוחים
+רומניה
+עוגת ביסקוויטים
+מאזדה
+יחד
+ששון
+נטפליקס
+בסיס
+דייט
+מאי
+תל אביב
+מדים
 עוגת חתונה
+לק
+ג'וני דפ
+השלמה
+ביטול משמרת
+עדשים
+ארגזים
+כסף
+סושי
+מחיאות כפיים 
+רגישות
+מסיבת רווקות
+הקריה
+מרכז מידע
+הארי פוטר
+הצגה
+ארגז
+אביב
+קמפוס
+אוטו
+כבוד
+צילומים
+יפן
+אישורי הגעה
+חגיגה
+שדה תעופה
+פרגון
+עוגת שוקולד
+מלצר
+יערות הכרמל
+זר כלה
+דיוטי פרי
+שמש
+אורחים
+אירוע
+מחסיר פעימה
+מאורסים
+תצפיתנית
+הפתעה
+קשר
+מסעדה
+חכמו
+פרוייקט הייל מרי
+מנה עיקרית
+הקשבה
+כנות
+נישואין
+משפחה
+ניטשה
+שיק
+דיסנילנד
+לרקוד
+אחיין
+חיבוק
+סנדוויץ'
+תמיכה
+טעימות
+ארה"ב
+מזל
+נאום
+IKEA
+אמון
+ראשון לציון
+אנסטסיה
+בר
+כתובה
+רבנות
+מרגש
+הקאמרי
+חקר ביצועים
+iHerb
+עתיד
+הצעת נישואין
+חתונה
+מלווים
+כשר
+תה קינמון
+דרך
+אלבום
+מערבה
+שמחה
+דרכון
+לבוש חגיגי
+זוגיות
+סייטן
+טיול
+אורח
+כרם שלום
+ביטחון
+רב
+ירושלים
+ווילי וונקה
+רגע
+הרמיוני
+מרוקו
+רוקי
+מעונות
+סרט
+הונגריה
+נדרים
+אהבה
+אומפה-לומפה
+רון וויזלי
+צ'ק-אין
+טוקיו
+תפריט
+ברכות
+גרין רול סושי
+הריס
+כושר
+קווידיץ'
+גרייס
+טים ברטון
+שמן קוקוס
+כלה
+לחגוג
+עמותת אנוש
+דמבלדור
+בית
+מסע
+עוגה
+מדעי המידע
+מעבר דירה
+ברכה
+שיהוק
+ברמן
+פיזיקה
+טיסה
+סדנת בישול
+ברול סטארס (brawl stars)
+יופי
+מסיבת אירוסין
+גרביים
+ביטלג'וס
+שבירת כוס
+סאלי
+צייטלין
+חברים
+כלה קלה
+טבעוני
+צ'כיה
+ריקוד סלואו
+התאהבות
+נשיקה
+חופשה
+רכבת
+חיבה
+מחזות זמר
+מסיבה
+קופידון
+קונפטי
+Pumpkin spice
+Dayton / Ohio
+סדנה
+אדממה
+רחבת ריקודים
+קייטרינג
+מזכרת
+צפון
+רומנטיקה
+סידורי הושבה
+גן אירועים
+הסיוט שלפני חג המולד
+טיפות עיניים
+אושר
+תסרוקת
+כרטיס טיסה
+סויה
+בת זקונים
+קישוט
+וולדמורט
+ביונד מיט
+קרקרים
+קידושין
+חיזור
+שישי
+שמלת כלה
+המספריים של אדוארד
+בלונים
+כוס
+אלטרנטיב
+תכשיט
+כרטיס ברכה
+הבחורה החדשה
+ג'ק
+הרמת כוסית
+קרית שמונה
+יום פתוח
+עין כרם
+צחוק
+טבעת אירוסין
+אלכוהול
+מזל טוב
+דיג'יי
+צה"ל
+קינוח
+רב סרן
+אמילי
+נופש
+חליפה
+זיכרון
+מרכז
+נוף
+מזוודה
+טקס החתונה
+סבלנות
+תיאטרון
+זהב
+לוקיישן 
+כרבולית
+שותפות
+בית כנסת
+מחמאה
+יאסא
+שבת חתן
+דוד/ה
+מוזיקה
+הצלחה
+שירות קבע
+צ'ארלי בממלכת השוקולד
+עקבים
+נייר פצפצים
+חנה פרסוף
+גורל
+אולם אירועים
+מחונן
+משכנתא
+בויאר
+בכור
+ריקודים
+צ'ופ-סטיקס
+דרגה
+טבעת
+עדים
+הרפתקה
+בית קפה
+מצלמה
+עוגיות
+יהלום
+משחקי קופסה
+עיצוב
+שבע ברכות
+לוח זמנים
+חיל האוויר
+נאמנות
+תקווה
+פרחים
+דיקסיט
+חוקי
+חנוכת בית
+בודפשט
+תואר שני
+גבעת שמואל
+שגרירות
+מתנה
+קשיו
+התרגשות
+זמן איכות
+חלום
+חיבור
+לחיים
+Creative pea
+בר אילן
+הרמוניה
+צורפות
+צילום
+רשימת מוזמנים
+אל על
+חבר ילדות
+כיף
+הינומה
+יין
+קבלת פנים
+טופו
+אפליקציית היכרות
+מסיבת רווקים
+ACE
+אימון
+הזמנה
+איפור
+ירח דבש
+טוסטר אובן
+משק ווילר
+פרפרים בבטן 
+משמרת לילה
+התחלה
+צלם
+אייר
+חתן
+התחייבות
+ויקטור
+תואר ראשון
+הוגוורטס
+אליאס
+הבטחה
+חיים משותפים
+מסלול
+תקשורת
+פנימייה
+רחובות
+שבת
+לבן
+טחינה
+Universal Studios
+חתונת הרפאים
+אוניברסיטה
+רחביה
+מחויבות
+קצין
+האוניברסיטה העברית
+חברות
+מלון
+קרם קוקוס
+ויגן פרנדלי
+תמונה
+רכב
+שיר כניסה
+יום ירושלים
     </script>
 
     <script>
@@ -207,16 +543,16 @@
         const wordsPerCard = 6; 
         const numSpaces = 70; 
 
-        // Default placeholder images
+        // Default static images
         let startImageBase64 = "https://cdn-icons-png.flaticon.com/512/2457/2457612.png"; 
-        let finishImageBase64 = "https://cdn-icons-png.flaticon.com/512/2457/2457612.png"; 
+        const finishImageBase64 = "https://cdn-icons-png.flaticon.com/512/2457/2457612.png"; // Hardcoded back to default
 
         window.onload = function() {
             generateCards();
             generateBoard();
         };
 
-        // --- Handle Image Uploads ---
+        // --- Handle Start Image Upload ---
         document.getElementById('start-image-upload').addEventListener('change', function(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -228,15 +564,24 @@
             reader.readAsDataURL(file); 
         });
 
-        document.getElementById('finish-image-upload').addEventListener('change', function(event) {
+        // --- Handle Background Image Upload ---
+        document.getElementById('bg-image-upload').addEventListener('change', function(event) {
             const file = event.target.files[0];
             if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
-                finishImageBase64 = e.target.result; 
-                generateBoard(); 
+                const bgNode = document.getElementById('bg-image');
+                bgNode.setAttribute('href', e.target.result);
+                // Remove the grayscale filter so custom photos render in full color
+                bgNode.removeAttribute('filter');
             };
             reader.readAsDataURL(file); 
+        });
+
+        // --- Handle Background Opacity Slider (Real-time updates) ---
+        document.getElementById('opacity-slider').addEventListener('input', function(event) {
+            // Instantly updates the SVG opacity without redrawing the whole board
+            document.getElementById('bg-image').setAttribute('opacity', event.target.value);
         });
 
         function switchTab(tab) {
@@ -256,7 +601,7 @@
             } else {
                 document.getElementById('deck-container').style.display = 'none';
                 document.getElementById('board-container').style.display = 'flex';
-                boardTools.style.display = 'block'; 
+                boardTools.style.display = 'flex'; // Show tools layout
                 pageStyle.innerHTML = '@page { size: A4 landscape; margin: 0; }';
                 btnImg.textContent = 'Export Board as PNG';
             }
@@ -354,6 +699,7 @@
                 text.setAttribute("text-anchor", "middle");
                 
                 if (i === 0) {
+                    // Start spot with custom image upload
                     circle.setAttribute("r", 40);
                     circle.setAttribute("fill", "#fdf8f0");
                     circle.setAttribute("stroke", "#bfa071");
@@ -381,6 +727,7 @@
                     
                     spacesContainer.appendChild(img);
                 } else if (i === numSpaces) {
+                    // Finish spot using the static default image
                     circle.setAttribute("r", 60); 
                     circle.setAttribute("fill", "#fdf8f0");
                     circle.setAttribute("stroke", "#bfa071");
@@ -398,7 +745,7 @@
                     spacesContainer.appendChild(clipPath);
 
                     const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
-                    img.setAttribute("href", finishImageBase64);
+                    img.setAttribute("href", finishImageBase64); // Uses static constant
                     img.setAttribute("x", point.x - 56);
                     img.setAttribute("y", point.y - 56);
                     img.setAttribute("width", 112); 
