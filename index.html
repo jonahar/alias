@@ -17,6 +17,10 @@
     </style>
 
     <style>
+        :root {
+            --theme-color: #8fa688;
+        }
+
         body { 
             margin: 0; padding: 0; 
             font-family: 'Frank Ruhl Libre', serif;
@@ -29,6 +33,20 @@
             font-family: sans-serif; direction: ltr;
         }
 
+        .global-settings {
+            display: flex; justify-content: center; align-items: center; 
+            gap: 15px; margin-bottom: 15px; padding: 10px;
+            background-color: #f7f3e8; border-radius: 8px; border: 1px solid #ddd;
+            width: fit-content; margin-left: auto; margin-right: auto;
+        }
+
+        .global-settings label { font-weight: bold; color: #555; }
+        
+        .global-settings input[type="color"] {
+            width: 40px; height: 35px; border: 1px solid #ccc; 
+            border-radius: 4px; padding: 0; cursor: pointer;
+        }
+
         .tabs { margin: 15px 0; display: flex; justify-content: center; gap: 10px; }
 
         .tab-btn {
@@ -38,7 +56,7 @@
             transition: 0.3s;
         }
 
-        .tab-btn.active { background-color: #778b71; color: white; border: 2px solid #5c6c57; }
+        .tab-btn.active { background-color: var(--theme-color); color: white; border: 2px solid var(--theme-color); filter: brightness(0.9); }
 
         .export-btn {
             background-color: #bfa071; color: white; border: none;
@@ -49,20 +67,20 @@
         .export-btn:hover { background-color: #a6895d; }
         
         .upload-btn {
-            background-color: #778b71; color: white; border: none;
+            background-color: var(--theme-color); color: white; border: none;
             padding: 8px 16px; font-size: 14px; border-radius: 5px;
             cursor: pointer; margin: 0; font-weight: bold; display: inline-block;
         }
         
-        .upload-btn:hover { background-color: #5c6c57; }
+        .upload-btn:hover { filter: brightness(0.85); }
 
-        #loading-msg { display: none; color: #778b71; font-weight: bold; margin-top: 10px; }
+        #loading-msg { display: none; color: var(--theme-color); font-weight: bold; margin-top: 10px; }
 
         #deck-container { display: flex; flex-wrap: wrap; justify-content: center; padding: 20px; }
         #board-container { display: none; justify-content: center; padding: 20px; }
         #card-backs-container { display: none; justify-content: center; padding: 20px; }
         
-        #board-tools, #cards-tools { 
+        #board-tools, #cards-tools, #backs-tools { 
             display: none; justify-content: center; align-items: center; 
             gap: 15px; margin-top: 15px; flex-wrap: wrap;
         } 
@@ -79,7 +97,7 @@
         
         .info-badge { background: #e2e8e0; border-color: #cbd5c1; }
 
-        .slider-container input { cursor: pointer; }
+        .slider-container input[type="range"] { cursor: pointer; }
         .input-container input { 
             width: 50px; text-align: center; border: 1px solid #ccc; 
             border-radius: 4px; padding: 2px; font-weight: bold;
@@ -87,7 +105,7 @@
 
         /* --- Global Card Styling --- */
         .card {
-            width: 2.5in; height: 3.5in; background-color: #778b71; 
+            width: 2.5in; height: 3.5in; background-color: var(--theme-color); 
             box-sizing: border-box; page-break-after: always; break-after: page;
             display: flex; flex-direction: column; box-shadow: 0 4px 8px rgba(0,0,0,0.05); 
             margin: 10px; padding: 8px; 
@@ -129,35 +147,14 @@
 
         /* --- Card Back Design --- */
         #card-backs-container .inner-card {
-            background-color: #778b71; 
             justify-content: center; 
             align-items: center;
-            border: 4px solid #ffffff; 
-        }
-        
-        .card-back-text {
-            font-family: 'Varela Round', sans-serif;
-            font-size: 38pt;
-            font-weight: bold;
-            color: #bfa071;
-            text-align: center;
-            line-height: 1.1;
-            /* 16-point circular shadow for a perfectly smooth bubbly outline */
-            text-shadow:
-                -3px -3px 0 #fff, 0 -3px 0 #fff, 3px -3px 0 #fff,
-                -3px 0 0 #fff, 3px 0 0 #fff,
-                -3px 3px 0 #fff, 0 3px 0 #fff, 3px 3px 0 #fff,
-                -2px -3px 0 #fff, 2px -3px 0 #fff,
-                -3px -2px 0 #fff, 3px -2px 0 #fff,
-                -3px 2px 0 #fff, 3px 2px 0 #fff,
-                -2px 3px 0 #fff, 2px 3px 0 #fff,
-                0px 6px 15px rgba(0,0,0,0.3);
-            letter-spacing: -2px; 
+            border: none; 
         }
 
         /* --- Board Game Design --- */
         .board-wrapper {
-            width: 297mm; height: 210mm; background-color: #ffffff; border: 15px solid #778b71;
+            width: 297mm; height: 210mm; background-color: #ffffff; border: 15px solid var(--theme-color);
             border-radius: 40px; box-sizing: border-box; position: relative; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.15); overflow: hidden;
         }
@@ -176,8 +173,14 @@
 <body>
 
     <div id="control-panel">
-        <h2 style="color:#778b71; margin-top: 0; font-family:'Frank Ruhl Libre', serif; direction:rtl; font-size: 28px;">ALIAS: מהדורת חתונה</h2>
+        <h2 style="color: var(--theme-color); margin-top: 0; font-family:'Frank Ruhl Libre', serif; direction:rtl; font-size: 28px;">ALIAS: מהדורת חתונה</h2>
         
+        <!-- Global Settings -->
+        <div class="global-settings">
+            <label for="theme-color-picker">🎨 Theme Color:</label>
+            <input type="color" id="theme-color-picker" value="#8fa688">
+        </div>
+
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('cards')">כרטיסיות (Cards)</button>
             <button class="tab-btn" onclick="switchTab('board')">לוח משחק (Board)</button>
@@ -186,7 +189,7 @@
 
         <div>
             <button class="export-btn" id="btn-export-pdf" onclick="window.print()">Export as PDF</button>
-            <button class="export-btn" id="btn-export-img" onclick="exportImages()">Export Cards as ZIP (PNGs)</button>
+            <button class="export-btn" id="btn-export-img" onclick="exportImages()">Export Selected Tab (PNGs/ZIP)</button>
         </div>
 
         <!-- Tools visible on Cards tab -->
@@ -195,7 +198,7 @@
             
             <label for="words-upload" class="upload-btn">📄 Upload Words (.txt)</label>
             <input type="file" id="words-upload" accept=".txt" style="display: none;">
-            
+
             <div class="input-container">
                 <label for="words-per-card">Words per Card:</label>
                 <input type="number" id="words-per-card" min="2" max="12" value="6">
@@ -222,6 +225,24 @@
             </div>
         </div>
 
+        <!-- Tools visible on Back tab -->
+        <div id="backs-tools">
+            <div class="info-badge">📏 2.5" x 3.5" (Poker Size, 5:7)</div>
+            
+            <label for="back-image-upload" class="upload-btn">📷 Upload Back Photo</label>
+            <input type="file" id="back-image-upload" accept="image/*" style="display: none;">
+
+            <div class="slider-container">
+                <label for="back-size-slider">Circle Size:</label>
+                <input type="range" id="back-size-slider" min="20" max="100" value="75">
+            </div>
+
+            <div class="slider-container">
+                <label for="back-fade-slider">Solid Center (Opacity Area):</label>
+                <input type="range" id="back-fade-slider" min="0" max="100" value="60">
+            </div>
+        </div>
+
         <div id="loading-msg">Processing... Please wait.</div>
     </div>
 
@@ -231,7 +252,6 @@
     <!-- TAB 2: BOARD GAME -->
     <div id="board-container">
         <div class="board-wrapper" id="board-capture-area">
-            <!-- FIX APPLIED HERE: Changed preserveAspectRatio to "none" -->
             <svg id="board-svg" viewBox="0 0 1200 850" width="100%" height="100%" preserveAspectRatio="none">
                 <image id="bg-image" href="https://cdn-icons-png.flaticon.com/512/2457/2457612.png" 
                        x="0" y="0" width="1200" height="850" opacity="0.10" filter="grayscale(100%)" preserveAspectRatio="xMidYMid slice"/>
@@ -275,18 +295,43 @@
     </script>
 
     <script>
+        // State Variables
+        let themeColor = "#8fa688";
         let wordsPerCard = 6; 
-        const numSpaces = 70; 
-
-        const customStartSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#ffffff" /><circle cx="42" cy="55" r="22" fill="none" stroke="#778b71" stroke-width="5"/><circle cx="58" cy="55" r="22" fill="none" stroke="#bfa071" stroke-width="5"/><polygon points="42,25 50,34 42,38 34,34" fill="#bfa071"/></svg>`;
-        let startVectorBase64 = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(customStartSVG);
         const finishImageBase64 = "https://cdn-icons-png.flaticon.com/512/2457/2457612.png"; 
+        
+        let uploadedStartImageBase64 = null;
+        let backImageBase64 = finishImageBase64; 
+        let backImageSize = 75; 
+        let backImageSolid = 60; 
 
         window.onload = function() {
+            document.documentElement.style.setProperty('--theme-color', themeColor);
             generateCards();
             generateBoard();
             generateCardBacks();
         };
+
+        // --- Helper for Start Image SVG Generation ---
+        function getStartVectorBase64() {
+            if (uploadedStartImageBase64) return uploadedStartImageBase64;
+            
+            // Generates a dynamic SVG incorporating the current theme color
+            const customStartSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#ffffff" /><circle cx="42" cy="55" r="22" fill="none" stroke="${themeColor}" stroke-width="5"/><circle cx="58" cy="55" r="22" fill="none" stroke="#bfa071" stroke-width="5"/><polygon points="42,25 50,34 42,38 34,34" fill="#bfa071"/></svg>`;
+            return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(customStartSVG);
+        }
+
+        // --- Global Settings Handlers ---
+        document.getElementById('theme-color-picker').addEventListener('input', function(event) {
+            themeColor = event.target.value;
+            // Update CSS Variable for static elements
+            document.documentElement.style.setProperty('--theme-color', themeColor);
+            
+            // Re-render elements that depend on inline JS variables (like SVGs)
+            generateCards();
+            generateBoard();
+            generateCardBacks();
+        });
 
         // --- Configuration Handlers ---
         document.getElementById('words-per-card').addEventListener('input', function(event) {
@@ -298,7 +343,6 @@
             }
         });
 
-        // --- Custom Words File Upload ---
         document.getElementById('words-upload').addEventListener('change', function(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -311,22 +355,18 @@
             reader.readAsText(file);
         });
 
-        // --- Start Image Handler ---
+        // --- Board Image Handlers ---
         document.getElementById('start-image-upload').addEventListener('change', function(event) {
             const file = event.target.files[0];
             if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
-                startVectorBase64 = e.target.result;
-                const startImgNode = document.getElementById('start-image-node');
-                if (startImgNode) {
-                    startImgNode.setAttribute('href', startVectorBase64);
-                }
+                uploadedStartImageBase64 = e.target.result;
+                generateBoard();
             };
             reader.readAsDataURL(file); 
         });
 
-        // --- Board Image Handlers ---
         document.getElementById('bg-image-upload').addEventListener('change', function(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -343,39 +383,60 @@
             document.getElementById('bg-image').setAttribute('opacity', event.target.value);
         });
 
+        // --- Card Back Handlers ---
+        document.getElementById('back-image-upload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                backImageBase64 = e.target.result;
+                generateCardBacks(); 
+            };
+            reader.readAsDataURL(file); 
+        });
+
+        document.getElementById('back-size-slider').addEventListener('input', function(event) {
+            backImageSize = event.target.value;
+            generateCardBacks();
+        });
+
+        document.getElementById('back-fade-slider').addEventListener('input', function(event) {
+            backImageSolid = event.target.value;
+            generateCardBacks();
+        });
+
         // --- TAB MANAGEMENT ---
         function switchTab(tab) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.querySelector(`.tab-btn[onclick="switchTab('${tab}')"]`).classList.add('active');
 
             const pageStyle = document.getElementById('print-page-style');
-            const btnPdf = document.getElementById('btn-export-pdf');
             const btnImg = document.getElementById('btn-export-img');
             const boardTools = document.getElementById('board-tools');
             const cardsTools = document.getElementById('cards-tools');
+            const backsTools = document.getElementById('backs-tools');
 
             document.getElementById('deck-container').style.display = 'none';
             document.getElementById('board-container').style.display = 'none';
             document.getElementById('card-backs-container').style.display = 'none';
             boardTools.style.display = 'none'; 
             cardsTools.style.display = 'none';
+            backsTools.style.display = 'none';
 
             if (tab === 'cards') {
                 document.getElementById('deck-container').style.display = 'flex';
                 cardsTools.style.display = 'flex'; 
                 pageStyle.innerHTML = '@page { size: 2.5in 3.5in; margin: 0; }';
-                btnPdf.textContent = 'Export as PDF';
                 btnImg.textContent = 'Export Cards as ZIP (PNGs)';
             } else if (tab === 'board') {
                 document.getElementById('board-container').style.display = 'flex';
                 boardTools.style.display = 'flex'; 
                 pageStyle.innerHTML = '@page { size: A4 landscape; margin: 0; }';
-                btnPdf.textContent = 'Export Board as PDF';
                 btnImg.textContent = 'Export Board as PNG';
             } else if (tab === 'backs') {
                 document.getElementById('card-backs-container').style.display = 'flex';
+                backsTools.style.display = 'flex';
                 pageStyle.innerHTML = '@page { size: 2.5in 3.5in; margin: 0; }';
-                btnPdf.textContent = 'Export Back as PDF';
                 btnImg.textContent = 'Export Back as PNG';
             }
         }
@@ -399,6 +460,9 @@
                 const cardDiv = document.createElement('div');
                 cardDiv.className = 'card';
                 cardDiv.style.borderRadius = '0px'; 
+                
+                // Set the specific edge color via inline style
+                cardDiv.style.backgroundColor = themeColor;
                 
                 const innerCard = document.createElement('div');
                 innerCard.className = 'inner-card';
@@ -430,22 +494,51 @@
             const outerCardDiv = document.createElement('div');
             outerCardDiv.className = 'card';
             outerCardDiv.style.borderRadius = '0px'; 
+            
+            // Set background color via inline style
+            outerCardDiv.style.backgroundColor = themeColor;
             outerCardDiv.id = 'back-capture-area'; 
 
             const innerCardDiv = document.createElement('div');
             innerCardDiv.className = 'inner-card';
+            innerCardDiv.style.backgroundColor = themeColor;
 
-            const bubblyTextSpan = document.createElement('span');
-            bubblyTextSpan.className = 'card-back-text';
-            bubblyTextSpan.innerHTML = "הדר<br>ואורי"; 
+            // SVG implementation for perfectly dynamic radial fading that works with html2canvas
+            const svgContent = `
+                <svg viewBox="0 0 100 100" width="${backImageSize}%" height="${backImageSize}%" preserveAspectRatio="xMidYMid meet">
+                    <defs>
+                        <radialGradient id="fadeGradient" cx="50%" cy="50%" r="50%">
+                            <stop offset="${backImageSolid}%" stop-color="white" stop-opacity="1" />
+                            <stop offset="100%" stop-color="white" stop-opacity="0" />
+                        </radialGradient>
+                        <mask id="imageMask">
+                            <circle cx="50" cy="50" r="50" fill="url(#fadeGradient)" />
+                        </mask>
+                    </defs>
+                    <image href="${backImageBase64}" x="0" y="0" width="100" height="100" preserveAspectRatio="xMidYMid slice" mask="url(#imageMask)" />
+                </svg>
+            `;
 
-            innerCardDiv.appendChild(bubblyTextSpan);
+            innerCardDiv.innerHTML = svgContent;
             outerCardDiv.appendChild(innerCardDiv);
             container.appendChild(outerCardDiv);
         }
 
         // --- BOARD GENERATOR ---
         function generateBoard() {
+            // Temporarily display the board so the SVG path length can be calculated
+            const boardContainer = document.getElementById('board-container');
+            const wasHidden = window.getComputedStyle(boardContainer).display === 'none';
+            if (wasHidden) {
+                boardContainer.style.visibility = 'hidden';
+                boardContainer.style.display = 'flex';
+            }
+
+            // Ensure total playable spaces are a perfect multiple of 'wordsPerCard'
+            const targetSpaces = 70;
+            const exactMultiples = Math.round(targetSpaces / wordsPerCard) * wordsPerCard;
+            const dynamicNumSpaces = exactMultiples + 1; // +1 to account for Finish space
+
             const path = document.getElementById('logic-path');
             const spacesContainer = document.getElementById('board-spaces');
             spacesContainer.innerHTML = '';
@@ -469,12 +562,15 @@
             path.setAttribute('d', d.join(' '));
 
             const pathLength = path.getTotalLength();
-            for (let i = 0; i <= numSpaces; i++) {
-                const point = path.getPointAtLength((i / numSpaces) * pathLength);
+            for (let i = 0; i <= dynamicNumSpaces; i++) {
+                const point = path.getPointAtLength((i / dynamicNumSpaces) * pathLength);
                 const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
                 circle.setAttribute("cx", point.x); circle.setAttribute("cy", point.y);
                 circle.setAttribute("r", 20); circle.setAttribute("fill", "#ffffff");
-                circle.setAttribute("stroke", "#778b71"); circle.setAttribute("stroke-width", "4");
+                
+                // Color the spaces dynamically
+                circle.setAttribute("stroke", themeColor); 
+                circle.setAttribute("stroke-width", "4");
                 
                 if (i === 0) {
                     circle.setAttribute("r", 40); circle.setAttribute("fill", "#fdf8f0"); circle.setAttribute("stroke", "#bfa071");
@@ -486,11 +582,11 @@
                     clipPath.appendChild(clipCircle); spacesContainer.appendChild(clipPath);
                     const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
                     img.setAttribute("id", "start-image-node"); 
-                    img.setAttribute("href", startVectorBase64); img.setAttribute("x", point.x - 36); img.setAttribute("y", point.y - 36);
+                    img.setAttribute("href", getStartVectorBase64()); img.setAttribute("x", point.x - 36); img.setAttribute("y", point.y - 36);
                     img.setAttribute("width", 72); img.setAttribute("height", 72); 
                     img.setAttribute("preserveAspectRatio", "xMidYMid slice"); img.setAttribute("clip-path", "url(#start-clip)");
                     spacesContainer.appendChild(img);
-                } else if (i === numSpaces) {
+                } else if (i === dynamicNumSpaces) {
                     circle.setAttribute("r", 60); circle.setAttribute("fill", "#fdf8f0"); circle.setAttribute("stroke", "#bfa071");
                     spacesContainer.appendChild(circle);
                     const clipPath = document.createElementNS("http://www.w3.org/2000/svg", "clipPath");
@@ -513,6 +609,12 @@
                     text.textContent = displayNum;
                     spacesContainer.appendChild(text);
                 }
+            }
+
+            // Restore visibility state
+            if (wasHidden) {
+                boardContainer.style.display = 'none';
+                boardContainer.style.visibility = 'visible'; 
             }
         }
 
