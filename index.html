@@ -70,13 +70,13 @@
         /* Show cards-tools by default since Cards tab is default */
         #cards-tools { display: flex; }
 
-        .slider-container {
+        .slider-container, .info-badge {
             display: flex; align-items: center; gap: 10px; 
             background: #f7f3e8; padding: 6px 15px; 
             border-radius: 5px; border: 1px solid #ddd;
+            font-size: 14px; font-weight: bold; color: #555;
         }
 
-        .slider-container label { font-size: 14px; font-weight: bold; color: #555; }
         .slider-container input { cursor: pointer; }
 
         /* --- Global Card Styling --- */
@@ -187,6 +187,10 @@
         <div id="cards-tools">
             <label for="words-upload" class="upload-btn">📄 Upload Words (.txt)</label>
             <input type="file" id="words-upload" accept=".txt" style="display: none;">
+            
+            <div class="info-badge" id="card-count-display">
+                Total Cards: 0
+            </div>
         </div>
 
         <!-- Tools visible on Board tab -->
@@ -356,6 +360,13 @@
             deckContainer.innerHTML = '';
             const rawText = document.getElementById('raw-words').textContent;
             const myWords = rawText.split(/\r?\n/).map(w => w.trim()).filter(w => w.length > 0);
+
+            // Update card count display
+            const totalCards = Math.ceil(myWords.length / wordsPerCard);
+            const countDisplay = document.getElementById('card-count-display');
+            if (countDisplay) {
+                countDisplay.textContent = `Total Cards: ${totalCards}`;
+            }
 
             for (let i = 0; i < myWords.length; i += wordsPerCard) {
                 const cardWords = myWords.slice(i, i + wordsPerCard);
