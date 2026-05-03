@@ -70,7 +70,7 @@
         /* Show cards-tools by default since Cards tab is default */
         #cards-tools { display: flex; }
 
-        .slider-container, .info-badge {
+        .slider-container, .info-badge, .input-container {
             display: flex; align-items: center; gap: 10px; 
             background: #f7f3e8; padding: 6px 15px; 
             border-radius: 5px; border: 1px solid #ddd;
@@ -78,6 +78,10 @@
         }
 
         .slider-container input { cursor: pointer; }
+        .input-container input { 
+            width: 50px; text-align: center; border: 1px solid #ccc; 
+            border-radius: 4px; padding: 2px; font-weight: bold;
+        }
 
         /* --- Global Card Styling --- */
         .card {
@@ -188,6 +192,11 @@
             <label for="words-upload" class="upload-btn">📄 Upload Words (.txt)</label>
             <input type="file" id="words-upload" accept=".txt" style="display: none;">
             
+            <div class="input-container">
+                <label for="words-per-card">Words per Card:</label>
+                <input type="number" id="words-per-card" min="2" max="12" value="6">
+            </div>
+
             <div class="info-badge" id="card-count-display">
                 Total Cards: 0
             </div>
@@ -259,7 +268,7 @@
     </script>
 
     <script>
-        const wordsPerCard = 6; 
+        let wordsPerCard = 6; 
         const numSpaces = 70; 
 
         const customStartSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#ffffff" /><circle cx="42" cy="55" r="22" fill="none" stroke="#778b71" stroke-width="5"/><circle cx="58" cy="55" r="22" fill="none" stroke="#bfa071" stroke-width="5"/><polygon points="42,25 50,34 42,38 34,34" fill="#bfa071"/></svg>`;
@@ -271,6 +280,16 @@
             generateBoard();
             generateCardBacks();
         };
+
+        // --- Configuration Handlers ---
+        document.getElementById('words-per-card').addEventListener('input', function(event) {
+            let val = parseInt(event.target.value);
+            if (val >= 2 && val <= 12) {
+                wordsPerCard = val;
+                generateCards();
+                generateBoard(); 
+            }
+        });
 
         // --- Custom Words File Upload ---
         document.getElementById('words-upload').addEventListener('change', function(event) {
