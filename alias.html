@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -22,7 +23,6 @@
             background-color: #f7f3e8; 
         }
 
-        /* --- UI Control Panel & Tabs --- */
         #control-panel { 
             padding: 20px; text-align: center; background: #fff; 
             border-bottom: 2px solid #ddd; 
@@ -33,7 +33,7 @@
 
         .tab-btn {
             background-color: #e2e8e0; color: #555; border: 2px solid transparent;
-            padding: 10px 30px; font-size: 16px; border-radius: 25px;
+            padding: 10px 25px; font-size: 16px; border-radius: 25px;
             cursor: pointer; font-weight: bold; font-family: 'Frank Ruhl Libre', serif;
             transition: 0.3s;
         }
@@ -60,16 +60,15 @@
 
         #deck-container { display: flex; flex-wrap: wrap; justify-content: center; padding: 20px; }
         #board-container { display: none; justify-content: center; padding: 20px; }
+        #card-backs-container { display: none; justify-content: center; padding: 20px; }
         
-        /* Board specific tools wrapper */
-        #board-tools { 
-            display: none; 
-            justify-content: center; 
-            align-items: center; 
-            gap: 15px; 
-            margin-top: 15px; 
-            flex-wrap: wrap;
+        #board-tools, #cards-tools { 
+            display: none; justify-content: center; align-items: center; 
+            gap: 15px; margin-top: 15px; flex-wrap: wrap;
         } 
+        
+        /* Show cards-tools by default since Cards tab is default */
+        #cards-tools { display: flex; }
 
         .slider-container {
             display: flex; align-items: center; gap: 10px; 
@@ -80,22 +79,21 @@
         .slider-container label { font-size: 14px; font-weight: bold; color: #555; }
         .slider-container input { cursor: pointer; }
 
-        /* --- Cards Design --- */
+        /* --- Global Card Styling --- */
         .card {
-            width: 2.5in; height: 3.5in; 
-            background-color: #778b71; 
-            box-sizing: border-box; 
-            page-break-after: always; break-after: page;
-            display: flex; flex-direction: column; 
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05); 
+            width: 2.5in; height: 3.5in; background-color: #778b71; 
+            box-sizing: border-box; page-break-after: always; break-after: page;
+            display: flex; flex-direction: column; box-shadow: 0 4px 8px rgba(0,0,0,0.05); 
             margin: 10px; padding: 8px; 
         }
 
         .inner-card {
-            background-color: #ffffff; border-radius: 12px; 
+            border-radius: 12px; 
             width: 100%; height: 100%; display: flex; flex-direction: column;
             box-sizing: border-box; overflow: hidden;
         }
+
+        #deck-container .inner-card { background-color: #ffffff; }
         
         .card-header-area {
             text-align: center; padding: 15px 0 5px 0; 
@@ -123,13 +121,39 @@
             font-size: 15pt; width: 25px; margin-left: 10px; text-align: left; display: inline-block;
         }
 
+        /* --- Card Back Design --- */
+        #card-backs-container .inner-card {
+            background-color: #778b71; 
+            justify-content: center; 
+            align-items: center;
+            border: 4px solid #ffffff; 
+        }
+        
+        .card-back-text {
+            font-family: 'Varela Round', sans-serif;
+            font-size: 38pt;
+            font-weight: bold;
+            color: #bfa071;
+            text-align: center;
+            line-height: 1.1;
+            /* 16-point circular shadow for a perfectly smooth bubbly outline */
+            text-shadow:
+                -3px -3px 0 #fff, 0 -3px 0 #fff, 3px -3px 0 #fff,
+                -3px 0 0 #fff, 3px 0 0 #fff,
+                -3px 3px 0 #fff, 0 3px 0 #fff, 3px 3px 0 #fff,
+                -2px -3px 0 #fff, 2px -3px 0 #fff,
+                -3px -2px 0 #fff, 3px -2px 0 #fff,
+                -3px 2px 0 #fff, 3px 2px 0 #fff,
+                -2px 3px 0 #fff, 2px 3px 0 #fff,
+                0px 6px 15px rgba(0,0,0,0.3);
+            letter-spacing: -2px; 
+        }
+
         /* --- Board Game Design --- */
         .board-wrapper {
-            width: 297mm; height: 210mm; 
-            background-color: #ffffff; border: 15px solid #778b71;
-            border-radius: 40px; box-sizing: border-box;
-            position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            overflow: hidden;
+            width: 297mm; height: 210mm; background-color: #ffffff; border: 15px solid #778b71;
+            border-radius: 40px; box-sizing: border-box; position: relative; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); overflow: hidden;
         }
 
         @media print { 
@@ -137,6 +161,7 @@
             #control-panel { display: none !important; } 
             .card { box-shadow: none; margin: 0; }
             #deck-container { padding: 0; display: block; }
+            #card-backs-container { padding: 0; display: block; }
             .board-wrapper { box-shadow: none; margin: 0; border-radius: 0; }
             #board-container { padding: 0; }
         }
@@ -150,24 +175,27 @@
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('cards')">כרטיסיות (Cards)</button>
             <button class="tab-btn" onclick="switchTab('board')">לוח משחק (Board)</button>
+            <button class="tab-btn" onclick="switchTab('backs')">גב (Back)</button>
         </div>
 
         <div>
-            <button class="export-btn" onclick="window.print()">Export as PDF</button>
+            <button class="export-btn" id="btn-export-pdf" onclick="window.print()">Export as PDF</button>
             <button class="export-btn" id="btn-export-img" onclick="exportImages()">Export Cards as ZIP (PNGs)</button>
         </div>
 
-        <!-- Custom Image Uploaders & Slider (Visible only on Board tab) -->
+        <!-- Tools visible on Cards tab -->
+        <div id="cards-tools">
+            <label for="words-upload" class="upload-btn">📄 Upload Words (.txt)</label>
+            <input type="file" id="words-upload" accept=".txt" style="display: none;">
+        </div>
+
+        <!-- Tools visible on Board tab -->
         <div id="board-tools">
-            <label for="start-image-upload" class="upload-btn">📷 Upload Start Photo</label>
-            <input type="file" id="start-image-upload" accept="image/*" style="display: none;">
-            
-            <label for="bg-image-upload" class="upload-btn">🖼️ Upload Background</label>
+            <label for="bg-image-upload" class="upload-btn">🖼️ Upload Background Photo</label>
             <input type="file" id="bg-image-upload" accept="image/*" style="display: none;">
 
             <div class="slider-container">
                 <label for="opacity-slider">Background Fade:</label>
-                <!-- Range slider from 0 (invisible) to 1 (solid) -->
                 <input type="range" id="opacity-slider" min="0" max="1" step="0.01" value="0.10">
             </div>
         </div>
@@ -175,396 +203,82 @@
         <div id="loading-msg">Processing... Please wait.</div>
     </div>
 
-    <!-- TAB 1: CARDS -->
+    <!-- TAB 1: CARDS FRONT -->
     <div id="deck-container"></div>
 
     <!-- TAB 2: BOARD GAME -->
     <div id="board-container">
         <div class="board-wrapper" id="board-capture-area">
             <svg id="board-svg" viewBox="0 0 1200 850" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
-                
-                <!-- Full-Bleed Background Image (Controlled by Slider) -->
-                <!-- preserveAspectRatio="xMidYMid slice" ensures it scales edge-to-edge perfectly -->
                 <image id="bg-image" href="https://cdn-icons-png.flaticon.com/512/2457/2457612.png" 
                        x="0" y="0" width="1200" height="850" opacity="0.10" filter="grayscale(100%)" preserveAspectRatio="xMidYMid slice"/>
-
-                <!-- The invisible path logic -->
                 <path id="logic-path" fill="none" stroke="#bfa071" stroke-width="8" stroke-dasharray="15, 12" stroke-linecap="round" opacity="0.6"/>
-                
-                <!-- The spaces -->
                 <g id="board-spaces"></g>
             </svg>
         </div>
     </div>
+    
+    <!-- TAB 3: CARDS BACK -->
+    <div id="card-backs-container"></div>
 
     <script type="text/plain" id="raw-words">
-אהבת אמת
-פלייליסט
-מקווה
-מעטפה
 חופה
-BST (קבלן)
-לב
-להתכרבל
-חומץ תפוחים
-רומניה
-עוגת ביסקוויטים
-מאזדה
-יחד
-ששון
-נטפליקס
-בסיס
-דייט
-מאי
-תל אביב
-מדים
-עוגת חתונה
-לק
-ג'וני דפ
-השלמה
-ביטול משמרת
-עדשים
-ארגזים
-כסף
-סושי
-מחיאות כפיים 
-רגישות
-מסיבת רווקות
-הקריה
-מרכז מידע
-הארי פוטר
-הצגה
-ארגז
-אביב
-קמפוס
-אוטו
-כבוד
-צילומים
-יפן
-אישורי הגעה
-חגיגה
-שדה תעופה
-פרגון
-עוגת שוקולד
-מלצר
-יערות הכרמל
-זר כלה
-דיוטי פרי
-שמש
-אורחים
-אירוע
-מחסיר פעימה
-מאורסים
-תצפיתנית
-הפתעה
-קשר
-מסעדה
-חכמו
-פרוייקט הייל מרי
-מנה עיקרית
-הקשבה
-כנות
-נישואין
-משפחה
-ניטשה
-שיק
-דיסנילנד
-לרקוד
-אחיין
-חיבוק
-סנדוויץ'
-תמיכה
-טעימות
-ארה"ב
-מזל
-נאום
-IKEA
-אמון
-ראשון לציון
-אנסטסיה
-בר
-כתובה
-רבנות
-מרגש
-הקאמרי
-חקר ביצועים
-iHerb
-עתיד
-הצעת נישואין
-חתונה
-מלווים
-כשר
-תה קינמון
-דרך
-אלבום
-מערבה
-שמחה
-דרכון
-לבוש חגיגי
-זוגיות
-סייטן
-טיול
-אורח
-כרם שלום
-ביטחון
-רב
-ירושלים
-ווילי וונקה
-רגע
-הרמיוני
-מרוקו
-רוקי
-מעונות
-סרט
-הונגריה
-נדרים
-אהבה
-אומפה-לומפה
-רון וויזלי
-צ'ק-אין
-טוקיו
-תפריט
-ברכות
-גרין רול סושי
-הריס
-כושר
-קווידיץ'
-גרייס
-טים ברטון
-שמן קוקוס
-כלה
-לחגוג
-עמותת אנוש
-דמבלדור
-בית
-מסע
-עוגה
-מדעי המידע
-מעבר דירה
-ברכה
-שיהוק
-ברמן
-פיזיקה
-טיסה
-סדנת בישול
-ברול סטארס (brawl stars)
-יופי
-מסיבת אירוסין
-גרביים
-ביטלג'וס
-שבירת כוס
-סאלי
-צייטלין
-חברים
-כלה קלה
-טבעוני
-צ'כיה
-ריקוד סלואו
-התאהבות
-נשיקה
-חופשה
-רכבת
-חיבה
-מחזות זמר
-מסיבה
-קופידון
-קונפטי
-Pumpkin spice
-Dayton / Ohio
-סדנה
-אדממה
-רחבת ריקודים
-קייטרינג
-מזכרת
-צפון
-רומנטיקה
-סידורי הושבה
-גן אירועים
-הסיוט שלפני חג המולד
-טיפות עיניים
-אושר
-תסרוקת
-כרטיס טיסה
-סויה
-בת זקונים
-קישוט
-וולדמורט
-ביונד מיט
-קרקרים
-קידושין
-חיזור
-שישי
-שמלת כלה
-המספריים של אדוארד
-בלונים
-כוס
-אלטרנטיב
-תכשיט
-כרטיס ברכה
-הבחורה החדשה
-ג'ק
-הרמת כוסית
-קרית שמונה
-יום פתוח
-עין כרם
-צחוק
-טבעת אירוסין
-אלכוהול
-מזל טוב
-דיג'יי
-צה"ל
-קינוח
-רב סרן
-אמילי
-נופש
-חליפה
-זיכרון
-מרכז
-נוף
-מזוודה
-טקס החתונה
-סבלנות
-תיאטרון
-זהב
-לוקיישן 
-כרבולית
-שותפות
-בית כנסת
-מחמאה
-יאסא
-שבת חתן
-דוד/ה
-מוזיקה
-הצלחה
-שירות קבע
-צ'ארלי בממלכת השוקולד
-עקבים
-נייר פצפצים
-חנה פרסוף
-גורל
-אולם אירועים
-מחונן
-משכנתא
-בויאר
-בכור
-ריקודים
-צ'ופ-סטיקס
-דרגה
-טבעת
-עדים
-הרפתקה
-בית קפה
-מצלמה
-עוגיות
-יהלום
-משחקי קופסה
-עיצוב
-שבע ברכות
-לוח זמנים
-חיל האוויר
-נאמנות
-תקווה
-פרחים
-דיקסיט
-חוקי
-חנוכת בית
-בודפשט
-תואר שני
-גבעת שמואל
-שגרירות
-מתנה
-קשיו
-התרגשות
-זמן איכות
-חלום
-חיבור
-לחיים
-Creative pea
-בר אילן
-הרמוניה
-צורפות
-צילום
-רשימת מוזמנים
-אל על
-חבר ילדות
-כיף
+טבעת נישואין
+שבירת הכוס
 הינומה
-יין
-קבלת פנים
-טופו
-אפליקציית היכרות
-מסיבת רווקים
-ACE
-אימון
-הזמנה
-איפור
+ריקוד סלואו
 ירח דבש
-טוסטר אובן
-משק ווילר
-פרפרים בבטן 
-משמרת לילה
-התחלה
-צלם
-אייר
-חתן
-התחייבות
-ויקטור
-תואר ראשון
-הוגוורטס
-אליאס
-הבטחה
-חיים משותפים
-מסלול
-תקשורת
-פנימייה
-רחובות
-שבת
-לבן
-טחינה
-Universal Studios
-חתונת הרפאים
-אוניברסיטה
-רחביה
-מחויבות
-קצין
-האוניברסיטה העברית
-חברות
-מלון
-קרם קוקוס
-ויגן פרנדלי
-תמונה
-רכב
-שיר כניסה
-יום ירושלים
+שמלת כלה
+חליפת חתן
+כתובה
+זר פרחים
+צילומי זוגיות
+קבלת פנים
+הזמנה לחתונה
+מסיבת רווקות
+שושבינה
+מתנות לאורחים
+זרקורים
+חתן וכלה
+ריקודים
+ברכות
+צילום מגנטים
+דיג'יי
+אולם אירועים
+שבע ברכות
+כניסה לחופה
+מזל טוב
+עוגת חתונה
     </script>
 
     <script>
-        // --- GLOBAL SETTINGS ---
         const wordsPerCard = 6; 
         const numSpaces = 70; 
 
-        // Default static images
-        let startImageBase64 = "https://cdn-icons-png.flaticon.com/512/2457/2457612.png"; 
-        const finishImageBase64 = "https://cdn-icons-png.flaticon.com/512/2457/2457612.png"; // Hardcoded back to default
+        const customStartSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#ffffff" /><circle cx="42" cy="55" r="22" fill="none" stroke="#778b71" stroke-width="5"/><circle cx="58" cy="55" r="22" fill="none" stroke="#bfa071" stroke-width="5"/><polygon points="42,25 50,34 42,38 34,34" fill="#bfa071"/></svg>`;
+        const startVectorBase64 = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(customStartSVG);
+        const finishImageBase64 = "https://cdn-icons-png.flaticon.com/512/2457/2457612.png"; 
 
         window.onload = function() {
             generateCards();
             generateBoard();
+            generateCardBacks();
         };
 
-        // --- Handle Start Image Upload ---
-        document.getElementById('start-image-upload').addEventListener('change', function(event) {
+        // --- Custom Words File Upload ---
+        document.getElementById('words-upload').addEventListener('change', function(event) {
             const file = event.target.files[0];
             if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
-                startImageBase64 = e.target.result;
+                document.getElementById('raw-words').textContent = e.target.result;
+                generateCards();
                 generateBoard(); 
             };
-            reader.readAsDataURL(file); 
+            reader.readAsText(file);
         });
 
-        // --- Handle Background Image Upload ---
+        // --- Board Image Handlers ---
         document.getElementById('bg-image-upload').addEventListener('change', function(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -572,43 +286,56 @@ Universal Studios
             reader.onload = function(e) {
                 const bgNode = document.getElementById('bg-image');
                 bgNode.setAttribute('href', e.target.result);
-                // Remove the grayscale filter so custom photos render in full color
-                bgNode.removeAttribute('filter');
+                bgNode.removeAttribute('filter'); 
             };
             reader.readAsDataURL(file); 
         });
 
-        // --- Handle Background Opacity Slider (Real-time updates) ---
         document.getElementById('opacity-slider').addEventListener('input', function(event) {
-            // Instantly updates the SVG opacity without redrawing the whole board
             document.getElementById('bg-image').setAttribute('opacity', event.target.value);
         });
 
+        // --- TAB MANAGEMENT ---
         function switchTab(tab) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.querySelector(`.tab-btn[onclick="switchTab('${tab}')"]`).classList.add('active');
 
             const pageStyle = document.getElementById('print-page-style');
+            const btnPdf = document.getElementById('btn-export-pdf');
             const btnImg = document.getElementById('btn-export-img');
             const boardTools = document.getElementById('board-tools');
+            const cardsTools = document.getElementById('cards-tools');
+
+            document.getElementById('deck-container').style.display = 'none';
+            document.getElementById('board-container').style.display = 'none';
+            document.getElementById('card-backs-container').style.display = 'none';
+            boardTools.style.display = 'none'; 
+            cardsTools.style.display = 'none';
 
             if (tab === 'cards') {
                 document.getElementById('deck-container').style.display = 'flex';
-                document.getElementById('board-container').style.display = 'none';
-                boardTools.style.display = 'none'; 
+                cardsTools.style.display = 'flex'; 
                 pageStyle.innerHTML = '@page { size: 2.5in 3.5in; margin: 0; }';
+                btnPdf.textContent = 'Export as PDF';
                 btnImg.textContent = 'Export Cards as ZIP (PNGs)';
-            } else {
-                document.getElementById('deck-container').style.display = 'none';
+            } else if (tab === 'board') {
                 document.getElementById('board-container').style.display = 'flex';
-                boardTools.style.display = 'flex'; // Show tools layout
+                boardTools.style.display = 'flex'; 
                 pageStyle.innerHTML = '@page { size: A4 landscape; margin: 0; }';
+                btnPdf.textContent = 'Export Board as PDF';
                 btnImg.textContent = 'Export Board as PNG';
+            } else if (tab === 'backs') {
+                document.getElementById('card-backs-container').style.display = 'flex';
+                pageStyle.innerHTML = '@page { size: 2.5in 3.5in; margin: 0; }';
+                btnPdf.textContent = 'Export Back as PDF';
+                btnImg.textContent = 'Export Back as PNG';
             }
         }
 
+        // --- CARDS (FRONT) GENERATOR ---
         function generateCards() {
             const deckContainer = document.getElementById('deck-container');
+            deckContainer.innerHTML = '';
             const rawText = document.getElementById('raw-words').textContent;
             const myWords = rawText.split(/\r?\n/).map(w => w.trim()).filter(w => w.length > 0);
 
@@ -616,6 +343,7 @@ Universal Studios
                 const cardWords = myWords.slice(i, i + wordsPerCard);
                 const cardDiv = document.createElement('div');
                 cardDiv.className = 'card';
+                cardDiv.style.borderRadius = '0px'; 
                 
                 const innerCard = document.createElement('div');
                 innerCard.className = 'inner-card';
@@ -639,123 +367,92 @@ Universal Studios
             }
         }
 
+        // --- CARDS (BACK) GENERATOR ---
+        function generateCardBacks() {
+            const container = document.getElementById('card-backs-container');
+            container.innerHTML = ''; 
+
+            const outerCardDiv = document.createElement('div');
+            outerCardDiv.className = 'card';
+            outerCardDiv.style.borderRadius = '0px'; 
+            outerCardDiv.id = 'back-capture-area'; 
+
+            const innerCardDiv = document.createElement('div');
+            innerCardDiv.className = 'inner-card';
+
+            const bubblyTextSpan = document.createElement('span');
+            bubblyTextSpan.className = 'card-back-text';
+            bubblyTextSpan.innerHTML = "הדר<br>ואורי"; 
+
+            innerCardDiv.appendChild(bubblyTextSpan);
+            outerCardDiv.appendChild(innerCardDiv);
+            container.appendChild(outerCardDiv);
+        }
+
+        // --- BOARD GENERATOR ---
         function generateBoard() {
             const path = document.getElementById('logic-path');
             const spacesContainer = document.getElementById('board-spaces');
-            
             spacesContainer.innerHTML = '';
             
-            const cx = 600;
-            const cy = 425; 
+            const cx = 600, cy = 425; 
             let d = [];
             let numPoints = 1200; 
-            let turns = 3.5;
-            let startAngle = -Math.PI / 4; 
+            let turns = 3.5, startAngle = -Math.PI / 4; 
             
             for (let i = 0; i <= numPoints; i++) {
                 let t = 1 - (i / numPoints); 
                 let angle = startAngle - (1 - t) * turns * 2 * Math.PI;
-                
                 let p = 2 + (t * 6); 
-                let rectFactor = Math.pow(
-                    Math.pow(Math.abs(Math.cos(angle)), p) + Math.pow(Math.abs(Math.sin(angle)), p),
-                    -1 / p
-                );
-                
-                let minRx = 65, minRy = 65;
-                let maxRx = 540, maxRy = 360; 
-                
+                let rectFactor = Math.pow(Math.pow(Math.abs(Math.cos(angle)), p) + Math.pow(Math.abs(Math.sin(angle)), p), -1 / p);
+                let minRx = 65, minRy = 65, maxRx = 540, maxRy = 360; 
                 let rx = (minRx + t * (maxRx - minRx)) * rectFactor;
                 let ry = (minRy + t * (maxRy - minRy)) * rectFactor;
-                
-                let x = cx + rx * Math.cos(angle);
-                let y = cy + ry * Math.sin(angle);
-                
-                if (i === 0) d.push(`M ${x} ${y}`);
-                else d.push(`L ${x} ${y}`);
+                let x = cx + rx * Math.cos(angle), y = cy + ry * Math.sin(angle);
+                if (i === 0) d.push(`M ${x} ${y}`); else d.push(`L ${x} ${y}`);
             }
             path.setAttribute('d', d.join(' '));
 
             const pathLength = path.getTotalLength();
-
             for (let i = 0; i <= numSpaces; i++) {
                 const point = path.getPointAtLength((i / numSpaces) * pathLength);
-                
                 const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                circle.setAttribute("cx", point.x);
-                circle.setAttribute("cy", point.y);
-                circle.setAttribute("r", 20); 
-                circle.setAttribute("fill", "#ffffff");
-                circle.setAttribute("stroke", "#778b71");
-                circle.setAttribute("stroke-width", "4");
-                
-                const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-                text.setAttribute("x", point.x);
-                text.setAttribute("y", point.y + 6); 
-                text.setAttribute("font-family", "'Frank Ruhl Libre', serif");
-                text.setAttribute("font-size", "18");
-                text.setAttribute("font-weight", "bold");
-                text.setAttribute("fill", "#333333");
-                text.setAttribute("text-anchor", "middle");
+                circle.setAttribute("cx", point.x); circle.setAttribute("cy", point.y);
+                circle.setAttribute("r", 20); circle.setAttribute("fill", "#ffffff");
+                circle.setAttribute("stroke", "#778b71"); circle.setAttribute("stroke-width", "4");
                 
                 if (i === 0) {
-                    // Start spot with custom image upload
-                    circle.setAttribute("r", 40);
-                    circle.setAttribute("fill", "#fdf8f0");
-                    circle.setAttribute("stroke", "#bfa071");
+                    circle.setAttribute("r", 40); circle.setAttribute("fill", "#fdf8f0"); circle.setAttribute("stroke", "#bfa071");
                     spacesContainer.appendChild(circle);
-
                     const clipPath = document.createElementNS("http://www.w3.org/2000/svg", "clipPath");
                     clipPath.setAttribute("id", "start-clip");
-                    
                     const clipCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                    clipCircle.setAttribute("cx", point.x);
-                    clipCircle.setAttribute("cy", point.y);
-                    clipCircle.setAttribute("r", 36); 
-                    
-                    clipPath.appendChild(clipCircle);
-                    spacesContainer.appendChild(clipPath);
-
+                    clipCircle.setAttribute("cx", point.x); clipCircle.setAttribute("cy", point.y); clipCircle.setAttribute("r", 36); 
+                    clipPath.appendChild(clipCircle); spacesContainer.appendChild(clipPath);
                     const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
-                    img.setAttribute("href", startImageBase64);
-                    img.setAttribute("x", point.x - 36);
-                    img.setAttribute("y", point.y - 36);
-                    img.setAttribute("width", 72); 
-                    img.setAttribute("height", 72); 
-                    img.setAttribute("preserveAspectRatio", "xMidYMid slice"); 
-                    img.setAttribute("clip-path", "url(#start-clip)");
-                    
+                    img.setAttribute("href", startVectorBase64); img.setAttribute("x", point.x - 36); img.setAttribute("y", point.y - 36);
+                    img.setAttribute("width", 72); img.setAttribute("height", 72); 
+                    img.setAttribute("preserveAspectRatio", "xMidYMid slice"); img.setAttribute("clip-path", "url(#start-clip)");
                     spacesContainer.appendChild(img);
                 } else if (i === numSpaces) {
-                    // Finish spot using the static default image
-                    circle.setAttribute("r", 60); 
-                    circle.setAttribute("fill", "#fdf8f0");
-                    circle.setAttribute("stroke", "#bfa071");
+                    circle.setAttribute("r", 60); circle.setAttribute("fill", "#fdf8f0"); circle.setAttribute("stroke", "#bfa071");
                     spacesContainer.appendChild(circle);
-
                     const clipPath = document.createElementNS("http://www.w3.org/2000/svg", "clipPath");
                     clipPath.setAttribute("id", "finish-clip");
-                    
                     const clipCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                    clipCircle.setAttribute("cx", point.x);
-                    clipCircle.setAttribute("cy", point.y);
-                    clipCircle.setAttribute("r", 56); 
-                    
-                    clipPath.appendChild(clipCircle);
-                    spacesContainer.appendChild(clipPath);
-
+                    clipCircle.setAttribute("cx", point.x); clipCircle.setAttribute("cy", point.y); clipCircle.setAttribute("r", 56); 
+                    clipPath.appendChild(clipCircle); spacesContainer.appendChild(clipPath);
                     const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
-                    img.setAttribute("href", finishImageBase64); // Uses static constant
-                    img.setAttribute("x", point.x - 56);
-                    img.setAttribute("y", point.y - 56);
-                    img.setAttribute("width", 112); 
-                    img.setAttribute("height", 112); 
-                    img.setAttribute("preserveAspectRatio", "xMidYMid slice"); 
-                    img.setAttribute("clip-path", "url(#finish-clip)");
-                    
+                    img.setAttribute("href", finishImageBase64); img.setAttribute("x", point.x - 56); img.setAttribute("y", point.y - 56);
+                    img.setAttribute("width", 112); img.setAttribute("height", 112); 
+                    img.setAttribute("preserveAspectRatio", "xMidYMid slice"); img.setAttribute("clip-path", "url(#finish-clip)");
                     spacesContainer.appendChild(img);
                 } else {
                     spacesContainer.appendChild(circle);
+                    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    text.setAttribute("x", point.x); text.setAttribute("y", point.y + 6); 
+                    text.setAttribute("font-family", "'Frank Ruhl Libre', serif"); text.setAttribute("font-size", "18");
+                    text.setAttribute("font-weight", "bold"); text.setAttribute("fill", "#333333"); text.setAttribute("text-anchor", "middle");
                     const displayNum = ((i - 1) % wordsPerCard) + 1;
                     text.textContent = displayNum;
                     spacesContainer.appendChild(text);
@@ -763,16 +460,22 @@ Universal Studios
             }
         }
 
-        async function exportImages() {
+        // --- EXPORT HANDLING ---
+        function exportImages() {
             const activeTab = document.querySelector('.tab-btn.active').textContent;
-            if (activeTab.includes('Cards')) exportCardsToZip();
-            else exportBoardToPng();
+            if (activeTab.includes('Cards')) {
+                exportCardsToZip();
+            } else if (activeTab.includes('Board')) {
+                exportBoardToPng();
+            } else if (activeTab.includes('Back')) {
+                exportCardBackToPng();
+            }
         }
 
         async function exportCardsToZip() {
             document.getElementById('loading-msg').style.display = 'block';
             const zip = new JSZip();
-            const cards = document.querySelectorAll('.card');
+            const cards = document.querySelectorAll('#deck-container .card');
             
             try {
                 for (let i = 0; i < cards.length; i++) {
@@ -786,25 +489,33 @@ Universal Studios
                     link.download = "Alias_Cards.zip";
                     link.click();
                 });
-            } catch (err) {
-                alert("Error generating zip. Try the 'Export as PDF' button instead.");
-            }
+            } catch (err) { alert("Error generating zip. Try the 'Export as PDF' button instead."); }
             document.getElementById('loading-msg').style.display = 'none';
         }
 
         async function exportBoardToPng() {
             document.getElementById('loading-msg').style.display = 'block';
             const board = document.getElementById('board-capture-area');
-            
             try {
                 const canvas = await html2canvas(board, { scale: 3, useCORS: true });
                 const link = document.createElement('a');
                 link.href = canvas.toDataURL("image/png");
                 link.download = "Alias_Board.png";
                 link.click();
-            } catch (err) {
-                alert("Error generating PNG. Try the 'Export as PDF' button instead.");
-            }
+            } catch (err) { alert("Error generating PNG. Try the 'Export as PDF' button instead."); }
+            document.getElementById('loading-msg').style.display = 'none';
+        }
+
+        async function exportCardBackToPng() {
+            document.getElementById('loading-msg').style.display = 'block';
+            const backDesign = document.getElementById('back-capture-area');
+            try {
+                const canvas = await html2canvas(backDesign, { scale: 4, useCORS: true });
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL("image/png");
+                link.download = "Alias_Card_Back.png";
+                link.click();
+            } catch (err) { alert("Error generating PNG. Try the 'Export as PDF' button instead."); }
             document.getElementById('loading-msg').style.display = 'none';
         }
     </script>
