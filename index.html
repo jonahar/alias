@@ -254,7 +254,7 @@
         <div class="board-wrapper" id="board-capture-area">
             <svg id="board-svg" viewBox="0 0 1200 850" width="100%" height="100%" preserveAspectRatio="none">
                 <image id="bg-image" href="https://cdn-icons-png.flaticon.com/512/2457/2457612.png" 
-                       x="0" y="0" width="1200" height="850" opacity="0.10" filter="grayscale(100%)" preserveAspectRatio="xMidYMid slice"/>
+                       x="0" y="0" width="1200" height="850" opacity="0.10" filter="grayscale(100%)" preserveAspectRatio="xMidYMid meet"/>
                 <path id="logic-path" fill="none" stroke="#bfa071" stroke-width="8" stroke-dasharray="15, 12" stroke-linecap="round" opacity="0.6"/>
                 <g id="board-spaces"></g>
             </svg>
@@ -326,7 +326,7 @@
             themeColor = event.target.value;
             // Update CSS Variable for static elements
             document.documentElement.style.setProperty('--theme-color', themeColor);
-            
+
             // Re-render elements that depend on inline JS variables (like SVGs)
             generateCards();
             generateBoard();
