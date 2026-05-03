@@ -191,6 +191,9 @@
 
         <!-- Tools visible on Board tab -->
         <div id="board-tools">
+            <label for="start-image-upload" class="upload-btn">🏁 Upload Start Photo</label>
+            <input type="file" id="start-image-upload" accept="image/*" style="display: none;">
+
             <label for="bg-image-upload" class="upload-btn">🖼️ Upload Background Photo</label>
             <input type="file" id="bg-image-upload" accept="image/*" style="display: none;">
 
@@ -256,7 +259,7 @@
         const numSpaces = 70; 
 
         const customStartSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#ffffff" /><circle cx="42" cy="55" r="22" fill="none" stroke="#778b71" stroke-width="5"/><circle cx="58" cy="55" r="22" fill="none" stroke="#bfa071" stroke-width="5"/><polygon points="42,25 50,34 42,38 34,34" fill="#bfa071"/></svg>`;
-        const startVectorBase64 = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(customStartSVG);
+        let startVectorBase64 = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(customStartSVG);
         const finishImageBase64 = "https://cdn-icons-png.flaticon.com/512/2457/2457612.png"; 
 
         window.onload = function() {
@@ -276,6 +279,21 @@
                 generateBoard(); 
             };
             reader.readAsText(file);
+        });
+
+        // --- Start Image Handler ---
+        document.getElementById('start-image-upload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                startVectorBase64 = e.target.result;
+                const startImgNode = document.getElementById('start-image-node');
+                if (startImgNode) {
+                    startImgNode.setAttribute('href', startVectorBase64);
+                }
+            };
+            reader.readAsDataURL(file); 
         });
 
         // --- Board Image Handlers ---
@@ -430,6 +448,7 @@
                     clipCircle.setAttribute("cx", point.x); clipCircle.setAttribute("cy", point.y); clipCircle.setAttribute("r", 36); 
                     clipPath.appendChild(clipCircle); spacesContainer.appendChild(clipPath);
                     const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
+                    img.setAttribute("id", "start-image-node"); 
                     img.setAttribute("href", startVectorBase64); img.setAttribute("x", point.x - 36); img.setAttribute("y", point.y - 36);
                     img.setAttribute("width", 72); img.setAttribute("height", 72); 
                     img.setAttribute("preserveAspectRatio", "xMidYMid slice"); img.setAttribute("clip-path", "url(#start-clip)");
